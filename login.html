@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
+    <title>Online School Excursion System</title>
+</head>
+
+<body>
+    <!-- Navigation Menu -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="#" id="logo" data-section="home">
+                <img src="images/logo.jpeg" style="width: 55px; height: auto">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" data-section="blog">Announcement</a></li>
+            <li><a href="#" data-section="contact">Contact Us</a></li>
+        </ul>
+        
+        <div class="auth-links">
+            <button id="nav-signin-btn">Sign In</button>
+            <button id="nav-register-btn">Register</button>
+        </div>
+    </nav>
+
+    <!-- Content Sections -->
+    <section id="home">
+        <h2>Welcome to the Online School Excursion System</h2>
+        <p>Our platform simplifies the organization of school excursions by allowing you to manage activities, permissions, and logistics all in one place.</p>
+        <div class="image-container">
+            <img src="images/about.png" alt="About Us">
+        </div>
+    </section>
+
+    <section id="blog">
+        <h2>Blog</h2><br>
+        <p>Explore our blog for the latest tips and insights on school excursion planning, educational travel, and more.</p>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Us</h2><br>
+        <p>If you have any questions or would like to learn more about our services, please reach out. We’re here to help make your school excursions a success!</p>
+    </section>
+
+    <!-- Form Wrapper -->
+    <div class="overlay" id="overlay-id"></div>
+    <div class="wrapper" id="wrapper-id">
+        <div class="form-wrapper sign-up-panel">
+            <form method="POST" action="register.php"> <!-- Change here -->
+                <h1>Create Account</h1>
+                <div class="icons-wrapper">
+                    <a href="#" class="social-icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="social-icon"><i class="fa-brands fa-microsoft"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input type="text" name="name" placeholder="Name" required> <!-- Added name attribute -->
+                <input type="email" name="email" placeholder="Email" required> <!-- Added name attribute -->
+                <input type="password" name="password" placeholder="Password" required> <!-- Added name attribute -->
+                <button type="submit">Sign Up</button> <!-- Added type attribute -->
+            </form>
+        </div>        
+        <div class="form-wrapper sign-in-panel">
+            <form method="POST" action="login.php">
+                <h1>Sign In</h1>
+                <div class="icons-wrapper">
+                    <a href="#" class="social-icon" id="google-login-btn">
+                        <i class="fa-brands fa-google-plus-g"></i>
+                    </a>                    
+                    <a href="#" class="social-icon"><i class="fa-brands fa-microsoft"></i></a>
+                </div>
+                <span>or use your email and password</span>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <a href="forgot_password.php">Forget Your Password?</a>
+                <button type="submit">Sign In</button>
+            </form>
+        </div>        
+        <div class="toggle-wrapper">
+            <div class="toggle-panel-container">
+                <div class="toggle-side toggle-side-right">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of site features</p>
+                    <button class="toggle-hidden" id="register-btn">Sign Up</button>
+                    <img src="images/sign in.png" alt="Sign Up" class="toggle-background-image">
+                </div>
+                <div class="toggle-side toggle-side-left">
+                    <h1>Hello Friend!</h1>
+                    <p>Register with your personal details to use all of site features</p>
+                    <button class="toggle-hidden" id="login-btn">Sign In</button>
+                    <img src="images/sign up.png" alt="Sign In" class="toggle-background-image">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="login.js"></script>
+    <script src="google.js" defer type="module"></script>
+</body>
+
+</html>
