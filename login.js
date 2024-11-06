@@ -153,3 +153,35 @@ function googleLogin() {
         });
 }
 
+function validatePasswordStrength(password) {
+    const strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+    return strongPasswordPattern.test(password);
+}
+
+function togglePasswordVisibility(inputId, iconElement) {
+    const passwordInput = document.getElementById(inputId);
+    const icon = iconElement.querySelector('i'); // Get the <i> tag inside the clicked span
+
+    // Toggle password visibility based on the current state
+    if (passwordInput.type === 'text') {
+        passwordInput.type = 'password';  // Hide password
+        icon.classList.remove('fa-eye-slash');  // Remove 'fa-eye-slash'
+        icon.classList.add('fa-eye');  // Add 'fa-eye' to show that it's hidden
+    } else {
+        passwordInput.type = 'text';  // Show password
+        icon.classList.remove('fa-eye');  // Remove 'fa-eye'
+        icon.classList.add('fa-eye-slash');  // Add 'fa-eye-slash' to show that it's revealed
+    }
+}
+window.onload = function() {
+    // Check registration and login success status
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+
+    if (status === 'success') {
+        alert("Registration successful!");
+    } else if (status === 'failed') {
+        alert("Login failed. Please check your email or password and try again.");
+    }
+};
+
