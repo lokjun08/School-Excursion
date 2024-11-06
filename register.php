@@ -1,61 +1,63 @@
 <?php
-session_start();
-include 'db_connect.php';
+// Include the database connection
+include('db_connect.php');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve and sanitize user input
-    $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get form inputs
+    $name = $_POST['name'];
+    $email = $_POST['email'];
     $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+    $confirmPassword = $_POST['confirm_password'];
 
-    // Validate password strength
-    $passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/';
-    if (!preg_match($passwordPattern, $password)) {
-        $_SESSION['error'] = "Password must be at least 8 characters long, with uppercase, lowercase, number, and special character.";
-        header("Location: login.html");
-        exit();
-    }
-
-    // Check if passwords match
-    if ($password !== $confirm_password) {
-        $_SESSION['error'] = "Passwords do not match.";
-        header("Location: login.html");
-        exit();
-    }
-
-    // Hash the password for security
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-    // Check if email already exists
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    // Server-side validation: Check if the email exists
+    $emailCheckQuery = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($emailCheckQuery);
+    $stmt->bind_param('s', $email);
     $stmt->execute();
-    $stmt->store_result();
+    $result = $stmt->get_result();
 
-    if ($stmt->num_rows > 0) {
-        $_SESSION['error'] = "An account with this email already exists.";
-        header("Location: login.html");
+    if ($result->num_rows > 0) {
+        // Email already exists
+        echo "<script>
+                alert('Email already exists.');
+                window.location.href = 'login.html';
+              </script>";
         exit();
-    }
-
-    // Insert new user into database
-    $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $name, $email, $hashed_password);
-    if ($stmt->execute()) {
-        $_SESSION['registration_success'] = true;
-        header("Location: logged.html"); // Redirect to login with success message
+    } elseif ($password !== $confirmPassword) {
+        // Passwords do not match
+        echo "<script>
+                alert('Passwords do not match.');
+                window.location.href = 'login.html';
+              </script>";
+        exit();
+    } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/', $password)) {
+        // Password does not meet strength requirements
+        echo "<script>
+                alert('Password must be at least 8 characters, with uppercase, lowercase, number, and special character.');
+                window.location.href = 'login.html';
+              </script>";
         exit();
     } else {
-        $_SESSION['error'] = "Registration failed. Please try again.";
-        header("Location: login.html");
-        exit();
+        // Proceed with registration (insert user into the database)
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT); // Encrypt password
+        $insertQuery = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($insertQuery);
+        $stmt->bind_param('sss', $name, $email, $hashedPassword);
+        if ($stmt->execute()) {
+            echo "<script>
+                    alert('Registration successful.');
+                    window.location.href = 'login.html';
+                  </script>";
+            exit();
+        } else {
+            echo "<script>
+                    alert('Error: Could not register user.');
+                    window.location.href = 'login.html';
+                  </script>";
+            exit();
+        }
     }
 
-    $stmt->close();
     $conn->close();
-} else {
-    header("Location: login.html");
-    exit();
 }
 ?>

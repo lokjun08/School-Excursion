@@ -72,15 +72,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="forgot.css">
     <title>Forgot Password</title>
 </head>
 <body>
     <h2>Forgot Password</h2>
     <form method="POST" action="">
-        <input type="email" name="email" placeholder="Enter your email" required>
-        <button type="submit">Send Reset Link</button>
-    </form>
+    <h2>Reset Your Password</h2>
+    <input type="email" name="email" placeholder="Enter your email" required>
+    <button type="submit">Send Reset Link</button>
+</form>
+
     <?php
     // Display success/error messages
     if (isset($_SESSION['success'])) {
@@ -92,5 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset($_SESSION['error']);
     }
     ?>
+    <a href="login.html" class="back-link">Back to Login</a>
 </body>
 </html>
+

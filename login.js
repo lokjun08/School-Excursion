@@ -1,13 +1,11 @@
-const wrapper = document.querySelector('.wrapper');
-
-// Function to toggle the form
+// Function to toggle the form visibility
 function toggleForm(show, isRegister) {
     const wrapper = document.querySelector('.wrapper');
     const overlay = document.getElementById('overlay-id');
 
     if (show) {
         wrapper.classList.add('show');
-        overlay.classList.add('show'); // show overlay
+        overlay.classList.add('show'); // Show overlay
         if (isRegister) {
             wrapper.classList.add('active');
         } else {
@@ -15,11 +13,10 @@ function toggleForm(show, isRegister) {
         }
     } else {
         wrapper.classList.remove('show');
-        overlay.classList.remove('show'); // hide overlay
+        overlay.classList.remove('show'); // Hide overlay
         wrapper.classList.remove('active');
     }
 }
-
 
 // Add event listeners to trigger form toggle
 document.getElementById('nav-signin-btn').addEventListener('click', () => toggleForm(true, false));
@@ -33,18 +30,12 @@ document.addEventListener('click', (event) => {
     }
 });
 
-
-// Sign In 和 Register 
-document.getElementById('nav-signin-btn').addEventListener('click', () => toggleForm(true, false));
-document.getElementById('nav-register-btn').addEventListener('click', () => toggleForm(true, true));
-
-// switch page signin signup
+// Sign In and Register
 document.getElementById('login-btn').addEventListener('click', () => toggleForm(true, false));
 document.getElementById('register-btn').addEventListener('click', () => toggleForm(true, true));
 
 // Click outside the form to hide it
 document.addEventListener('click', (event) => {
-    // Check if the click is outside of both the form container and the auth links
     const isClickInsideForm = event.target.closest('.wrapper');
     const isClickOnAuthLinks = event.target.closest('.auth-links');
     
@@ -52,7 +43,6 @@ document.addEventListener('click', (event) => {
         toggleForm(false);
     }
 });
-
 
 // Get all menu items and sections
 const menuItems = document.querySelectorAll('.nav-links a');
@@ -94,38 +84,6 @@ document.getElementById('logo').addEventListener('click', (event) => {
     menuItems.forEach(i => i.classList.remove('active'));
 });
 
- // Function to display a message based on login status
- function displayLoginMessage() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const status = urlParams.get('status');
-
-    // Select a placeholder or create an alert for login status message
-    const messageContainer = document.createElement('div');
-    messageContainer.style.padding = "10px";
-    messageContainer.style.margin = "10px 0";
-    messageContainer.style.textAlign = "center";
-
-    // Display success or error message based on the status
-    if (status === 'success') {
-        messageContainer.style.backgroundColor = "#d4edda";
-        messageContainer.style.color = "#155724";
-        messageContainer.textContent = "Login successful! Welcome back.";
-    } else if (status === 'failed') {
-        messageContainer.style.backgroundColor = "#f8d7da";
-        messageContainer.style.color = "#721c24";
-        messageContainer.textContent = "Login failed. Please check your email or password and try again.";
-    }
-
-    // Append the message container at the top of the form
-    const wrapper = document.getElementById('wrapper-id');
-    if (wrapper && messageContainer.textContent) {
-        wrapper.insertBefore(messageContainer, wrapper.firstChild);
-    }
-}
-
-// Call the function when the page loads
-window.onload = displayLoginMessage;
-
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
@@ -153,11 +111,7 @@ function googleLogin() {
         });
 }
 
-function validatePasswordStrength(password) {
-    const strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
-    return strongPasswordPattern.test(password);
-}
-
+// Function to toggle password visibility
 function togglePasswordVisibility(inputId, iconElement) {
     const passwordInput = document.getElementById(inputId);
     const icon = iconElement.querySelector('i'); // Get the <i> tag inside the clicked span
@@ -173,15 +127,49 @@ function togglePasswordVisibility(inputId, iconElement) {
         icon.classList.add('fa-eye-slash');  // Add 'fa-eye-slash' to show that it's revealed
     }
 }
-window.onload = function() {
-    // Check registration and login success status
-    const urlParams = new URLSearchParams(window.location.search);
-    const status = urlParams.get('status');
 
-    if (status === 'success') {
-        alert("Registration successful!");
-    } else if (status === 'failed') {
-        alert("Login failed. Please check your email or password and try again.");
+document.getElementById('register-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Client-side validation for password strength and matching passwords
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+
+    let valid = true;
+
+    // Password strength check (at least 8 characters, with uppercase, lowercase, number, and special character)
+    const strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+    if (!strongPasswordPattern.test(passwordInput.value)) {
+        alert("Password must be at least 8 characters, with uppercase, lowercase, number, and special character.");
+        valid = false;
     }
-};
 
+    // Confirm password check
+    if (passwordInput.value !== confirmPasswordInput.value) {
+        alert("Passwords do not match.");
+        valid = false;
+    }
+
+    if (valid) {
+        // If client-side validation passes, submit the form via AJAX
+        const formData = new FormData(document.getElementById('register-form'));
+
+        fetch('register.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);  // Show success message
+                window.location.href = 'login.html'; // Redirect on success
+            } else if (data.status === 'error') {
+                alert(data.message);  // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred. Please try again.");
+        });
+    }
+});
