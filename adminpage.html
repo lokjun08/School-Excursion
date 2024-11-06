@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Excursion Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+        }
+        .container-fluid {
+            padding-top: 20px;
+        }
+        .card-stat {
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .bg-purple { background-color: #6f42c1; }
+        .bg-pink { background-color: #e83e8c; }
+        .bg-orange { background-color: #fd7e14; }
+        .bg-blue { background-color: #007bff; }
+
+        /* Sidebar Styles */
+        #sidebar {
+            height: 100vh;
+            width: 220px;
+            position: fixed;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+        }
+        #sidebar.collapsed {
+            width: 60px;
+        }
+        #sidebar .nav-link {
+            font-size: 1em; 
+        }
+        #sidebar .nav-link .icon {
+            display: inline-block;
+            width: 24px;
+            text-align: center;
+        }
+        #sidebar .nav-link span {
+            transition: opacity 0.3s;
+        }
+        #sidebar.collapsed .nav-link span {
+            opacity: 0;
+        }
+
+        /* Main content adjustment */
+        #main-content {
+            margin-left: 220px; 
+            transition: margin-left 0.3s;
+        }
+        #main-content.collapsed {
+            margin-left: 60px;
+        }
+
+        /* Top Header */
+        .top-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+        }
+        .toggle-btn {
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        .search-input {
+            max-width: 180px; 
+        }
+
+        /* Responsive Card Sizing */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-container .col-md-3 {
+            flex: 1 1 48%; /* 2 cards per row on smaller screens */
+            max-width: 48%;
+        }
+        @media (min-width: 768px) {
+            .card-container .col-md-3 {
+                flex: 1 1 22%; /* Back to 4 cards per row on medium screens */
+                max-width: 22%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Header -->
+<div class="top-header">
+    <span class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></span>
+    <div class="d-flex align-items-center">
+        <input type="text" class="form-control mr-2 search-input" placeholder="Search Dashboard">
+        <i class="fas fa-envelope mr-3"></i>
+        <i class="fas fa-bell mr-3"></i>
+        <img src="https://via.placeholder.com/30" class="rounded-circle" alt="Profile">
+    </div>
+</div>
+
+<!-- Sidebar -->
+<div id="sidebar" class="bg-light">
+    <h5 class="text-center mt-3"><i class="fas fa-home"></i> <span>School</span></h5>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-tachometer-alt icon"></i><span> Dashboard</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-envelope icon"></i><span> Email</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-user icon"></i><span> Profile</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-calendar icon"></i><span> Calendar</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-chart-bar icon"></i><span> Charts</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-file-alt icon"></i><span> Forms</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-table icon"></i><span> Table</span></a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div id="main-content" class="container-fluid">
+    <div class="row mt-4 card-container">
+        <!-- Cards for Key Stats -->
+        <div class="col-md-3">
+            <div class="card card-stat bg-purple">
+                <h5><i class="fas fa-bus"></i> Total Excursions</h5>
+                <h3>25</h3>
+                <p>Jan - Dec 2024</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stat bg-pink">
+                <h5><i class="fas fa-users"></i> Students Participated</h5>
+                <h3>1200</h3>
+                <p>Jan - Dec 2024</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stat bg-orange">
+                <h5><i class="fas fa-check-circle"></i> Parental Approvals</h5>
+                <h3>1100</h3>
+                <p>Jan - Dec 2024</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stat bg-blue">
+                <h5><i class="fas fa-thumbs-up"></i> Feedback</h5>
+                <h3>98%</h3>
+                <p>Overall Satisfaction</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Overview and Upcoming Excursions -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-chart-line"></i> Participation Over Time</h5>
+                    <p>Total Excursions by Month</p>
+                    <div id="monthlyOverview">Monthly Overview Chart Placeholder</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-calendar-alt"></i> Upcoming Excursions</h5>
+                    <ul>
+                        <li><strong>Science Museum</strong>: 15th Nov, 45 students</li>
+                        <li><strong>Zoo Trip</strong>: 20th Nov, 60 students</li>
+                        <li><strong>Historic Fort</strong>: 30th Nov, 40 students</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- To-Do List and Permission Status -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-tasks"></i> To-Do List</h5>
+                    <ul id="toDoList">
+                        <li>Send permission slip reminders</li>
+                        <li>Confirm bus bookings</li>
+                        <li>Coordinate with chaperones</li>
+                        <li>Prepare emergency contacts list</li>
+                    </ul>
+                    <input type="text" id="newTask" class="form-control" placeholder="Add new task...">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-check-square"></i> Permission Status</h5>
+                    <ul>
+                        <li><strong>Science Museum</strong>: 38/45 Approved</li>
+                        <li><strong>Zoo Trip</strong>: 50/60 Approved</li>
+                        <li><strong>Historic Fort</strong>: 35/40 Approved</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript (for the sidebar toggle functionality) -->
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('collapsed');
+    }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
