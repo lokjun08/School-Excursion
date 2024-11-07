@@ -316,15 +316,14 @@ body {
     align-items: center;
     justify-content: center;
     padding: 10px; 
+    height:auto;
 }
 
-
-.logo img {
-    width: 55px;
-    height: auto;
-    border-radius: 50%; 
-    transition: opacity 0.3s ease-in-out; 
+.logo-image {
+    width: 65px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
 }
+
 
 .auth-links {
     display: flex;
