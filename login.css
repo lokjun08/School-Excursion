@@ -281,7 +281,6 @@ body {
     transform: translateY(-5px); 
 }
 
-
 .navbar a {
     color: white;
     text-decoration: none;
@@ -303,6 +302,14 @@ body {
     transform: scale(1.05);  
 }
 
+/* Remove the hover effect from the logo */
+.navbar .logo a:hover {
+    color: inherit;
+    background-color: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
 
 .logo {
     display: flex;
@@ -312,30 +319,12 @@ body {
 }
 
 
-.logo a {
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    display: inline-block;
-}
-
-
-.logo a:hover {
-    transform: translateY(-8px); 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-
 .logo img {
     width: 55px;
     height: auto;
     border-radius: 50%; 
     transition: opacity 0.3s ease-in-out; 
 }
-
-
-.logo a:hover img {
-    opacity: 0.9; 
-}
-
 
 .auth-links {
     display: flex;
