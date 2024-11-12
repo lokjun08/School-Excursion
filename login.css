@@ -302,6 +302,23 @@ body {
     transform: scale(1.05);  
 }
 
+/* Remove underline by default */
+.nav-links a {
+    text-decoration: none;
+    color: inherit; /* Keeps color inherited */
+}
+
+/* Add underline when link is clicked (focused) */
+.nav-links a:focus {
+    text-decoration: underline;
+}
+
+/* Add underline when link is active */
+.nav-links a:active {
+    text-decoration: underline;
+}
+
+
 /* Remove the hover effect from the logo */
 .navbar .logo a:hover {
     color: inherit;

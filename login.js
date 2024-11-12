@@ -1,87 +1,58 @@
 // Function to toggle the form visibility
-function toggleForm(show, isRegister) {
+function toggleForm(show) {
     const wrapper = document.querySelector('.wrapper');
     const overlay = document.getElementById('overlay-id');
 
     if (show) {
         wrapper.classList.add('show');
-        overlay.classList.add('show'); // Show overlay
-        if (isRegister) {
-            wrapper.classList.add('active');
-        } else {
-            wrapper.classList.remove('active');
-        }
+        overlay.classList.add('show');
     } else {
         wrapper.classList.remove('show');
-        overlay.classList.remove('show'); // Hide overlay
-        wrapper.classList.remove('active');
+        overlay.classList.remove('show');
     }
 }
 
-// Add event listeners to trigger form toggle
-document.getElementById('nav-signin-btn').addEventListener('click', () => toggleForm(true, false));
-document.getElementById('nav-register-btn').addEventListener('click', () => toggleForm(true, true));
+// Event listener to show the sign-in form
+document.getElementById('nav-signin-btn').addEventListener('click', () => toggleForm(true));
 
-// Handle clicks outside the form to close it
-document.addEventListener('click', (event) => {
-    const wrapper = document.querySelector('.wrapper');
-    if (!wrapper.contains(event.target) && !event.target.closest('.auth-links')) {
-        toggleForm(false);
-    }
-});
-
-// Sign In and Register
-document.getElementById('login-btn').addEventListener('click', () => toggleForm(true, false));
-document.getElementById('register-btn').addEventListener('click', () => toggleForm(true, true));
-
-// Click outside the form to hide it
-document.addEventListener('click', (event) => {
-    const isClickInsideForm = event.target.closest('.wrapper');
-    const isClickOnAuthLinks = event.target.closest('.auth-links');
-    
-    if (!isClickInsideForm && !isClickOnAuthLinks) {
-        toggleForm(false);
-    }
-});
+// Close form when clicking outside
+document.getElementById('overlay-id').addEventListener('click', () => toggleForm(false));
 
 // Get all menu items and sections
 const menuItems = document.querySelectorAll('.nav-links a');
 const sections = document.querySelectorAll('section');
 
-// Hide all sections initially except for home
+// Hide all sections except for home initially
 function hideAllSections() {
     sections.forEach(section => {
         section.style.display = 'none';
     });
 }
 
-// Show the specified section
+// Show a specific section
 function showSection(sectionId) {
     document.getElementById(sectionId).style.display = 'block';
 }
 
-// Function to handle menu item click
+// Initialize by showing only the home section
+hideAllSections();
+showSection('home');
+
+// Handle menu item clicks to show sections
 menuItems.forEach(item => {
     item.addEventListener('click', (event) => {
         event.preventDefault();
         const sectionId = event.target.getAttribute('data-section');
         hideAllSections();
         showSection(sectionId);
-
-        // Update active state
-        menuItems.forEach(i => i.classList.remove('active'));
-        event.target.classList.add('active');
     });
 });
 
-// Handle logo click to show home section and hide others
+// Handle logo click to show the home section
 document.getElementById('logo').addEventListener('click', (event) => {
     event.preventDefault();
     hideAllSections();
     showSection('home');
-
-    // Remove active class from other items
-    menuItems.forEach(i => i.classList.remove('active'));
 });
 
 // Firebase configuration
@@ -150,26 +121,5 @@ document.getElementById('register-form').addEventListener('submit', function (e)
         valid = false;
     }
 
-    if (valid) {
-        // If client-side validation passes, submit the form via AJAX
-        const formData = new FormData(document.getElementById('register-form'));
-
-        fetch('register.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert(data.message);  // Show success message
-                window.location.href = 'login.html'; // Redirect on success
-            } else if (data.status === 'error') {
-                alert(data.message);  // Show error message
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert("An error occurred. Please try again.");
-        });
-    }
 });
+
