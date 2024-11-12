@@ -45,14 +45,18 @@ if (isset($_GET['token']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         <h1>Reset Your Password</h1>
         <p>Enter a new password below to reset your account password.</p>
         <form method="POST" action="">
-            <div class="input-group">
-                <input type="password" name="new_password" placeholder="Enter New Password" required>
-                <span class="toggle-password" onclick="togglePassword('new_password')"><i class="fa fa-eye"></i></span>
-            </div>
-            <div class="input-group">
-                <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
-                <span class="toggle-password" onclick="togglePassword('confirm_password')"><i class="fa fa-eye"></i></span>
-            </div>
+        <div class="input-group">
+            <input type="password" name="new_password" placeholder="Enter New Password" required>
+            <span class="toggle-password" onclick="togglePassword('new_password')"><i class="fa fa-eye"></i></span>
+            <div class="error" id="password-error"></div> <!-- Error div for new password -->
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
+            <span class="toggle-password" onclick="togglePassword('confirm_password')"><i class="fa fa-eye"></i></span>
+            <div class="error1" id="confirm-error"></div> <!-- Error div for confirm password -->
+        </div>
+
             <button type="submit">Reset Password</button>
         </form>
 
@@ -64,27 +68,46 @@ if (isset($_GET['token']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         <p><a href="login.html" class="back-link">Back to Login</a></p>
     </div>
     <script>
-        function togglePassword(fieldName) {
-            const passwordField = document.querySelector(`input[name="${fieldName}"]`);
-            const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
-            passwordField.setAttribute("type", type);
-        }
+       function togglePassword(fieldName) {
+    const passwordField = document.querySelector(`input[name="${fieldName}"]`);
+    const eyeIcon = passwordField.nextElementSibling.querySelector('i'); // 确保选择到图标
+    const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+    passwordField.setAttribute("type", type);
+
+    // 更换图标样式
+    eyeIcon.classList.toggle("fa-eye-slash");
+    eyeIcon.classList.toggle("fa-eye");
+}
+
+
 
         document.querySelector("form").addEventListener("submit", function(event) {
             const password = document.querySelector('input[name="new_password"]').value;
             const confirmPassword = document.querySelector('input[name="confirm_password"]').value;
             const passwordCriteria = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
+            let valid = true;
+
+            // Check password criteria
             if (!passwordCriteria.test(password)) {
-                alert("Password must contain at least 8 characters, including a capital letter, a symbol, a lowercase letter, and a number.");
-                event.preventDefault();
-            } else if (password !== confirmPassword) {
-                alert("Passwords do not match.");
+                document.getElementById("password-error").textContent = "*Password must contain at least 8 characters, including a capital letter, a symbol, a lowercase letter, and a number.";
+                valid = false;
+            } else {
+                document.getElementById("password-error").textContent = "";
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                document.getElementById("confirm-error").textContent = "*Passwords do not match.";
+                valid = false;
+            } else {
+                document.getElementById("confirm-error").textContent = "";
+            }
+
+            if (!valid) {
                 event.preventDefault();
             }
         });
     </script>
 </body>
 </html>
-
-

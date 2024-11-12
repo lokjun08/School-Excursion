@@ -40,7 +40,7 @@ body {
 
 .input-group {
     position: relative;
-    margin: 15px 0;
+    margin-top: 20px;
 }
 
 .input-group input[type="password"],
@@ -75,7 +75,7 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 0px;
     transition: background-color 0.3s ease;
     width: 100%;
 }
@@ -118,3 +118,58 @@ body {
     border-radius: 5px;
 }
 
+/* Error message styling */
+.error {
+    color: red; /* Set error messages to red */
+    font-size: 0.9em;
+    margin-top: 3px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+    height: 60px; /* Fixed height to prevent shifting */
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Stack input and error message vertically */
+}
+
+input[type="password"] {
+    width: 100%;
+    padding-right: 30px; /* Space for the eye icon */
+    border: none;
+    border-radius: 8px;
+    background-color: #e1f5fe;
+    font-size: 14px;
+    outline: none;
+    height: 40px; /* Fixed height */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 35%;
+    transform: translateY(-50%); /* Center the icon vertically */
+    cursor: pointer;
+    color: #666;
+}
+
+.error {
+    font-weight: bold; /* Correct way to make the text bold */
+    position: absolute;
+    bottom: -20px; /* Position error message just below input */
+    color: red; /* Set error messages to red */
+    font-size: 0.68em; /* Adjusts font size */
+    width: 100%; /* Full width to align with input */
+    text-align: left; /* Align text to the left */
+}
+
+.error1 {
+    font-weight: bold; /* Correct way to make the text bold */
+    position: absolute;
+    bottom: -1px; /* Position error message just below input */
+    color: red; /* Set error messages to red */
+    font-size: 0.68em; /* Adjusts font size */
+    width: 100%; /* Full width to align with input */
+    text-align: left; /* Align text to the left */
+}
