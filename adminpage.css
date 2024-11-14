@@ -1,0 +1,27 @@
+ /* General styles */
+ body, html { height: 100%; overflow-x: hidden; }
+ .container-fluid { padding-top: 20px; }
+ .card-stat { border-radius: 10px; padding: 10px; color: white; margin-bottom: 15px; text-align: center; }
+ .bg-purple { background-color: #6f42c1; } .bg-pink { background-color: #e83e8c; }
+ .bg-orange { background-color: #fd7e14; } .bg-blue { background-color: #007bff; }
+ 
+ /* Sidebar Styles */
+ #sidebar { height: 100vh; width: 220px; position: fixed; background-color: #f8f9fa; transition: all 0.3s; }
+ #sidebar.collapsed { width: 60px; }
+ #sidebar .nav-link { font-size: 1em; }
+ #sidebar .nav-link .icon { display: inline-block; width: 24px; text-align: center; color: #007bff; }
+ #sidebar .nav-link span { transition: opacity 0.3s; }
+ #sidebar.collapsed .nav-link span { opacity: 0; }
+ 
+ /* Main Content */
+ #main-content { margin-left: 220px; width: calc(100% - 220px); transition: all 0.3s; }
+ #main-content.collapsed { margin-left: 60px; width: calc(100% - 60px); }
+ 
+ /* Toggle Button */
+ .top-header { background-color: #f8f9fa; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ddd; }
+ .toggle-btn { font-size: 1.5em; cursor: pointer; }
+ .search-input { max-width: 180px; }
+ 
+ /* Sections visibility */
+ .content-section { display: none; }
+ .content-section.active { display: block; }

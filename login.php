@@ -1,35 +1,46 @@
 <?php
 session_start();
-include 'db_connect.php';
+include 'db_connect.php'; // Assumes you have a database connection setup here
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT id, password FROM users WHERE email = ?");
+    // Fetch user based on the email provided
+    $query = "SELECT id, name, role, password FROM users WHERE email = ?";
+    $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $email);
     $stmt->execute();
-    $stmt->store_result();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($user_id, $hashed_password);
-        $stmt->fetch();
+    if ($user && password_verify($password, $user['password'])) {
+        // Store user information in session
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_name'] = $user['name'];
+        $_SESSION['user_role'] = $user['role'];
 
-        if (password_verify($password, $hashed_password)) {
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['email'] = $email;
-            echo "<script>alert('Login successful!'); window.location.href='logged.html';</script>";
-        } else {
-            echo "<script>alert('Incorrect password.'); window.location.href='login.html';</script>";
+        // Redirect based on role
+        switch ($user['role']) {
+            case 'admin':
+                header("Location: adminpage.php");
+                break;
+            case 'teacher':
+                header("Location: teacherpage.php");
+                break;
+            case 'parent':
+                header("Location: parentpage.php");
+                break;
+            default:
+                header("Location: login.html"); // Redirect to homepage if role is undefined
+                break;
         }
+        exit();
     } else {
-        echo "<script>alert('Email not found.'); window.location.href='login.html';</script>";
+        // Invalid login
+        echo "Invalid email or password.";
     }
-
     $stmt->close();
-    $conn->close();
-} else {
-    header("Location: login.html");
-    exit();
 }
+$conn->close();
 ?>
