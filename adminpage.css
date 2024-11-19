@@ -25,3 +25,14 @@
  /* Sections visibility */
  .content-section { display: none; }
  .content-section.active { display: block; }
+
+ .content-section {
+    display: none;
+}
+.content-section.active {
+    display: block;
+}
+
+#fullCalendar {
+    height: 500px; /* Adjust height as needed */
+}

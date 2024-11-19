@@ -1,0 +1,25 @@
+<?php
+require 'db_connect.php';
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch teacher data from the database
+$sql = "SELECT id, name FROM teachers";
+$result = $conn->query($sql);
+
+// Check if there are results
+if ($result->num_rows > 0) {
+    $teachers = [];
+    while ($row = $result->fetch_assoc()) {
+        $teachers[] = $row;
+    }
+    // Store the teacher data in a session or output as JSON
+    echo json_encode($teachers);
+} else {
+    echo "0 results";
+}
+
+$conn->close();
+?>

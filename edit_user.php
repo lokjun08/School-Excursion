@@ -1,18 +1,26 @@
 <?php
-include 'db_connect.php';
+// Include database connection
+include('db_connect.php');
 
-$id = $_POST['id'];
-$name = $_POST['name'];
-$email = $_POST['email'];
-$role = $_POST['role'];
+// Check if the user is updating
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $userId = $_POST['id'];
+    $userName = $_POST['name'];
+    $userEmail = $_POST['email'];
+    $userRole = $_POST['role'];
 
-$sql = "UPDATE users SET name='$name', email='$email', role='$role' WHERE id='$id'";
+    // Update the user in the database
+    $query = "UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('sssi', $userName, $userEmail, $userRole, $userId);
 
-if ($conn->query($sql) === TRUE) {
-    echo "User updated successfully";
-} else {
-    echo "Error: " . $conn->error;
+    if ($stmt->execute()) {
+        echo json_encode(['message' => 'User updated successfully']);
+    } else {
+        echo json_encode(['message' => 'Failed to update user']);
+    }
+
+    $stmt->close();
+    $conn->close();
 }
-
-$conn->close();
 ?>

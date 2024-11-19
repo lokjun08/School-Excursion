@@ -1,278 +1,23 @@
- // Fetch and display all excursions by default, or apply filters if selected
- function filterExcursions() {
-    const name = document.getElementById('filterName').value;
-    const date = document.getElementById('filterDate').value;
-    const teacher = document.getElementById('filterTeacher').value;
 
-    let queryParams = '';
-    if (name) queryParams += `name=${name}&`;
-    if (date) queryParams += `date=${date}&`;
-    if (teacher) queryParams += `teacher=${teacher}&`;
-
-    fetch(`filter_excursion.php?${queryParams}`)
-.then(response => response.json())
-.then(data => {
-    console.log("Fetched Data:", data); // Log fetched data to verify
-    const excursionTableBody = document.getElementById('excursionTableBody');
-    excursionTableBody.innerHTML = '';
-    data.forEach(excursion => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${excursion.name}</td>
-            <td>${excursion.type}</td>
-            <td>${excursion.date}</td>
-            <td>${excursion.location}</td>
-            <td>${excursion.teacher_name}</td>
-            <td>
-                <button class="btn btn-warning btn-sm" onclick="editExcursion(${excursion.id})">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteExcursion(${excursion.id})">Delete</button>
-            </td>
-        `;
-        excursionTableBody.appendChild(row);
-    });
-})
-.catch(error => console.error('Error:', error));
-
-}
-
-// Load all excursions initially when the page loads
-document.addEventListener('DOMContentLoaded', filterExcursions);
-
-function saveExcursion() {
-    const formData = new FormData(document.getElementById('excursionForm'));
-
-    fetch('save_excursion.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        alert('Excursion created successfully.'); // Show success alert
-        document.getElementById('excursionForm').reset(); // Reset form fields
-        var addEventModal = bootstrap.Modal.getInstance(document.getElementById('addEventModal'));
-        addEventModal.hide(); // Hide the modal
-        filterExcursions(); // Refresh the excursion list
-    })
-    .catch(error => console.error('Error:', error));
-
-    return false; // Prevent default form submission
-}
-
-
-    function hideSelectTeacherOption() {
-        var teacherSelect = document.getElementById('teacher_id');
-        var firstOption = teacherSelect.options[0];
-        if (teacherSelect.value !== "") {
-            firstOption.style.display = 'none';
-        } else {
-            firstOption.style.display = 'block';
-        }
-    }
-
-    function loadExcursionRequests() {
-        fetch('fetch_pending_excursions.php')
-            .then(response => response.json())
-            .then(data => {
-                let requestsHtml = '';
-                data.forEach(request => {
-                    requestsHtml += `
-                        <div class="request-item">
-                            <p><strong>${request.name}</strong> by ${request.teacher_name} on ${request.date}</p>
-                            <button class="btn btn-info btn-sm" onclick="viewRequest(${request.id})">View</button>
-                        </div>
-                    `;
-                });
-                document.getElementById('excursionRequestList').innerHTML = requestsHtml;
-            })
-            .catch(error => console.error('Error loading excursion requests:', error));
-    }
     
-    function viewRequest(requestId) {
-        fetch(`get_excursion_request.php?id=${requestId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('excursionDetails').innerText = `
-                    Name: ${data.name}\n
-                    Date: ${data.date}\n
-                    Location: ${data.location}\n
-                    Teacher: ${data.teacher_name}
-                `;
-                document.getElementById('rejectionReasonSection').style.display = 'none';
-                document.getElementById('rejectionReason').value = '';
-                document.getElementById('approveRejectModal').dataset.requestId = requestId;
-                new bootstrap.Modal(document.getElementById('approveRejectModal')).show();
-            })
-            .catch(error => console.error('Error fetching excursion request:', error));
-    }
+    // Save profile changes
+    function saveProfile() {
+        const formData = new FormData(document.getElementById('editProfileForm'));
     
-    function submitExcursionDecision(decision) {
-        const requestId = document.getElementById('approveRejectModal').dataset.requestId;
-        const reason = decision === 'rejected' ? document.getElementById('rejectionReason').value : '';
-    
-        if (decision === 'rejected' && !reason) {
-            alert('Please provide a reason for rejection.');
-            document.getElementById('rejectionReasonSection').style.display = 'block';
-            return;
-        }
-    
-        fetch('process_excursion_decision.php', {
+        fetch('update_profile.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: requestId, decision, reason })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            new bootstrap.Modal(document.getElementById('approveRejectModal')).hide();
-            loadExcursionRequests(); // Refresh the list of requests
-            filterExcursions(); // Refresh the excursion list if approved
-        })
-        .catch(error => console.error('Error processing excursion decision:', error));
-    }
-    
-    
-    // Fetch user details on page load and display in profile section
-        document.addEventListener("DOMContentLoaded", function() {
-            fetchUserProfile();
-        });
-
-        function fetchUserProfile() {
-            fetch('get_user_details.php')
-                .then(response => response.json())
-                .then(user => {
-                    document.getElementById('profileName').textContent = user.name;
-                    document.getElementById('user_id').value = user.id;
-                    document.getElementById('username').value = user.name;
-                    document.getElementById('email').value = user.email;
-
-                    // Optionally set a profile image if available
-                    if (user.profile_image) {
-                        document.getElementById('profileImage').src = user.profile_image;
-                    }
-                })
-                .catch(error => console.error('Error fetching profile:', error));
-        }
-
-        function saveProfile() {
-            const formData = new FormData(document.getElementById('editProfileForm'));
-
-            fetch('update_profile.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert('Profile updated successfully');
-                fetchUserProfile();  // Refresh the displayed profile info
-                var modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
-                modal.hide(); // Hide the modal after save
-            })
-            .catch(error => console.error('Error updating profile:', error));
-
-            return false; // Prevent default form submission
-        }
-
-        function logout() {
-            // Implement logout functionality here
-            alert('Logging out...');
-        }
-    
-    function filterExcursions() {
-        const name = document.getElementById('filterName').value;
-        const date = document.getElementById('filterDate').value;
-        const teacher = document.getElementById('filterTeacher').value;
-    
-        // Construct query string based on filter inputs (only if filters are applied)
-        let queryParams = '';
-        if (name) queryParams += `name=${name}&`;
-        if (date) queryParams += `date=${date}&`;
-        if (teacher) queryParams += `teacher=${teacher}&`;
-    
-        // Fetch all excursions if no filters are applied
-        fetch(`filter_excursion.php?${queryParams}`)
-            .then(response => response.json())
-            .then(data => {
-                const excursionTableBody = document.getElementById('excursionTableBody');
-                excursionTableBody.innerHTML = ''; // Clear existing rows
-    
-                data.forEach(excursion => {
-                    const row = document.createElement('tr');
-    
-                    row.innerHTML = `
-                        <td>${excursion.name}</td>
-                        <td>${excursion.type}</td>
-                        <td>${excursion.date}</td>
-                        <td>${excursion.location}</td>
-                        <td>${excursion.teacher_name}</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm" onclick="editExcursion(${excursion.id})">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteExcursion(${excursion.id})">Delete</button>
-                        </td>
-                    `;
-                    excursionTableBody.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Error:', error));
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        filterExcursions(); // Fetch and display all excursions by default
-    });
-    
-    function deleteExcursion(id) {
-        if (confirm('Are you sure you want to delete this excursion?')) {
-            fetch(`delete_excursion.php`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `id=${id}`
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data);
-                filterExcursions(); // Refresh the list after deletion
-            })
-            .catch(error => console.error('Error:', error));
-        }
-    }
-    
-    
-    function editExcursion(id) {
-        fetch(`get_excursion.php?id=${id}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('excursionId').value = data.id;
-                document.getElementById('name').value = data.name;
-                document.getElementById('type').value = data.type;
-                document.getElementById('date').value = data.date;
-                document.getElementById('location').value = data.location;
-                document.getElementById('teacher_id').value = data.teacher_id;
-                new bootstrap.Modal(document.getElementById('addEventModal')).show();
-            })
-            .catch(error => console.error('Error:', error));
-    }
-    
-    document.getElementById('approveBtn').onclick = function() {
-        changeExcursionStatus('approved');
-    };
-    
-    document.getElementById('rejectBtn').onclick = function() {
-        changeExcursionStatus('rejected');
-    };
-    
-    function changeExcursionStatus(status) {
-        const id = document.getElementById('excursionId').value;
-        fetch(`update_excursion_status.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `id=${id}&status=${status}`
+            body: formData
         })
         .then(response => response.text())
         .then(data => {
-            alert(data);
-            location.reload();
+            alert(data); // Display success message
+            bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+            // Optionally update displayed user info here
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => console.error('Error updating profile:', error));
     }
+    
+   
     
     
             function toggleSidebar() {
@@ -292,9 +37,20 @@ function saveExcursion() {
             }
     
             function logout() {
-                // Add logic to log out the user
+                // Clear session storage or cookies if any
+                sessionStorage.clear();  // Clears all session storage
+                localStorage.clear();    // Clears local storage (if you used it)
+            
+                // Optionally, you can remove specific cookies (if you are using them):
+                // document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                
+                // Redirect to the login page or another page after logout
+                window.location.href = "login.html";  // Replace with your login page URL
+            
+                // Show a logout message (optional)
                 alert('Logging out...');
             }
+            
     
             function searchDashboard() {
         const query = document.querySelector('.search-input').value.toLowerCase();
@@ -369,17 +125,26 @@ function saveExcursion() {
         document.addEventListener('DOMContentLoaded', fetchUsers);
         
         function editUser(id) {
+            console.log("Editing user with ID:", id); // Debugging to verify the id being passed
             fetch(`get_user.php?id=${id}`)
                 .then(response => response.json())
                 .then(user => {
+                    if (user.error) {
+                        alert(user.error);
+                        return;
+                    }
                     document.getElementById('userId').value = user.id;
                     document.getElementById('userName').value = user.name;
                     document.getElementById('userEmail').value = user.email;
-                    document.getElementById('userRole').value = user.role;
+        
+                    const roleSelect = document.getElementById('userRole');
+                    roleSelect.value = user.role || '';
+        
                     new bootstrap.Modal(document.getElementById('addUserModal')).show();
                 })
                 .catch(error => console.error('Error fetching user:', error));
         }
+        
         
         function saveUser() {
             const formData = new FormData(document.getElementById('userForm'));
@@ -446,74 +211,278 @@ function saveExcursion() {
          }
          
          function showSection(sectionId) {
+            // Get all sections and remove the 'active' class
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(section => {
                 section.classList.remove('active');
             });
         
+            // Activate the selected section
             const activeSection = document.getElementById(sectionId);
             if (activeSection) activeSection.classList.add('active');
         
-            // If the "Users" section is active, fetch user data
+            // Fetch user data if the "Users" section is active
             if (sectionId === 'users') {
                 fetchUsers();
             }
+        
+            // Re-render the calendar if the "Calendar" section is active
+            if (sectionId === "calendar") {
+                const calendarEl = document.getElementById("fullCalendar");
+                if (calendarEl) {
+                    // Initialize or render the calendar
+                    const calendar = FullCalendar.getCalendar(calendarEl); // Retrieve existing calendar instance
+                    if (calendar) {
+                        calendar.render(); // Re-render the calendar
+                    } else {
+                        // If no calendar instance exists, create it
+                        const newCalendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: "dayGridMonth",
+                            events: "/get_excursions.php",
+                            eventClick: function (info) {
+                                alert(`Excursion: ${info.event.title}\nStart: ${info.event.start}\nEnd: ${info.event.end}`);
+                            }
+                        });
+                        newCalendar.render(); // Render the new calendar
+                    }
+                }
+            }
         }
+        
 
         document.addEventListener('DOMContentLoaded', () => {
-            showSection('users'); // Automatically load the "Users" section on page load
+            showSection('dashboard'); // 
+        });
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchExcursions();
+        
+            document.querySelector('#excursionForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveExcursion();
+            });
         });
         
-        function toggleCollapse(submenuId) {
-            const submenu = document.getElementById(submenuId);
-            const arrowIcon = document.getElementById('management-arrow');
+        function fetchExcursions() {
+            fetch('excursion_handler.php', {
+                method: 'POST',
+                body: new URLSearchParams({ action: 'fetch' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#excursionTableBody');
+                tableBody.innerHTML = '';
+                data.forEach(item => {
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${item.type}</td>
+                            <td>${item.start_date}</td>
+                            <td>${item.end_date}</td>
+                            <td>${item.location}</td>
+                            <td>${item.num_participation || 0}</td>
+                            <td>${item.teacher_name || 'Unassigned'}</td>
+                            <td>
+                                <button onclick="editExcursion(${item.id})" class="btn btn-sm btn-primary">Edit</button>
+                                <button onclick="deleteExcursion(${item.id})" class="btn btn-sm btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
         
-            submenu.classList.toggle('collapse');
-            if (submenu.classList.contains('collapse')) {
-                arrowIcon.classList.remove('fa-chevron-up');
-                arrowIcon.classList.add('fa-chevron-down');
-            } else {
-                arrowIcon.classList.remove('fa-chevron-down');
-                arrowIcon.classList.add('fa-chevron-up');
+        function saveExcursion() {
+            const form = document.querySelector('#excursionForm');
+            const formData = new FormData(form);
+            formData.append('action', 'save');
+        
+            fetch('excursion_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    alert('Excursion saved successfully!');
+                    fetchExcursions();
+                    form.reset();
+                    bootstrap.Modal.getInstance(document.querySelector('#addEventModal')).hide();
+                }
+            });
+        }
+        
+        function editExcursion(id) {
+            fetch('excursion_handler.php', {
+                method: 'POST',
+                body: new URLSearchParams({ action: 'fetch' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const excursion = data.find(e => e.id == id);
+                if (excursion) {
+                    const form = document.querySelector('#excursionForm');
+                    form.elements['id'].value = excursion.id;
+                    form.elements['name'].value = excursion.name;
+                    form.elements['description'].value = excursion.description;
+                    form.elements['type'].value = excursion.type;
+                    form.elements['start_date'].value = excursion.start_date;
+                    form.elements['end_date'].value = excursion.end_date;
+                    form.elements['location'].value = excursion.location;
+                    form.elements['teacher_id'].value = excursion.assigned_teacher_id;
+                    new bootstrap.Modal(document.querySelector('#addEventModal')).show();
+                }
+            });
+        }
+        
+        function deleteExcursion(id) {
+            if (confirm('Are you sure you want to delete this excursion?')) {
+                fetch('excursion_handler.php', {
+                    method: 'POST',
+                    body: new URLSearchParams({ action: 'delete', id: id })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        alert('Excursion deleted successfully!');
+                        fetchExcursions();
+                    }
+                });
             }
         }
         
-        // Fetch and display user details on page load
-function loadUserProfile() {
-    fetch('get_user_details.php')
-        .then(response => response.json())
-        .then(user => {
-            if (!user.error) {
-                document.getElementById('profilePic').src = user.profile_picture || 'https://via.placeholder.com/30';
-                document.getElementById('userName').textContent = user.name;
-                
-                // Fill modal fields for editing
-                document.getElementById('userId').value = user.id;
-                document.getElementById('username').value = user.name;
-                document.getElementById('email').value = user.email;
-            } else {
-                console.error('User not found');
-            }
-        })
-        .catch(error => console.error('Error fetching user details:', error));
-}
+        function filterExcursions() {
+            const name = document.querySelector('#filterName').value;
+            const date = document.querySelector('#filterDate').value;
+            const teacher = document.querySelector('#filterTeacher').value;
+        
+            fetch('excursion_handler.php', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    action: 'filter',
+                    name: name,
+                    date: date,
+                    teacher: teacher
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#excursionTableBody');
+                tableBody.innerHTML = '';
+                data.forEach(item => {
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${item.type}</td>
+                            <td>${item.start_date}</td>
+                            <td>${item.end_date}</td>
+                            <td>${item.location}</td>
+                            <td>${item.num_participation || 0}</td>
+                            <td>${item.teacher_name || 'Unassigned'}</td>
+                            <td>
+                                <button onclick="editExcursion(${item.id})" class="btn btn-sm btn-primary">Edit</button>
+                                <button onclick="deleteExcursion(${item.id})" class="btn btn-sm btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+        
+        function loadExcursionRequests() {
+            fetch('excursion_handler.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=fetch_requests'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('excursionRequestsTableBody');
+                    tableBody.innerHTML = '';
+        
+                    data.forEach(request => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${request.excursion_name}</td>
+                            <td>${request.description}</td>
+                            <td>${request.type}</td>
+                            <td>${request.start_date}</td>
+                            <td>${request.end_date}</td>
+                            <td>${request.teacher_name}</td>
+                            <td>${request.status}</td>
+                            <td>
+                                <button class="btn btn-success" onclick="approveRequest(${request.id})">Approve</button>
+                                <button class="btn btn-danger" onclick="rejectRequest(${request.id})">Reject</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+        
+                    // Show the modal
+                    const modal = new bootstrap.Modal(document.getElementById('excursionRequestsModal'));
+                    modal.show();
+                });
+        }
 
-document.addEventListener('DOMContentLoaded', loadUserProfile);
-
-// Submit profile changes
-document.getElementById('editProfileForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-
-    fetch('update_profile.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        alert(data); // Show success message
-        loadUserProfile(); // Refresh profile details
-        bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
-    })
-    .catch(error => console.error('Error updating profile:', error));
+        function approveRequest(requestId) {
+            fetch('excursion_handler.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=approve_request&id=${requestId}`
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        alert('Request approved.');
+                        loadExcursionRequests();
+                    }
+                });
+        }
+        
+        function rejectRequest(requestId) {
+            const reason = prompt('Enter rejection reason:');
+            if (!reason) return;
+        
+            fetch('excursion_handler.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=reject_request&id=${requestId}&reason=${encodeURIComponent(reason)}`
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        alert('Request rejected.');
+                        loadExcursionRequests();
+                    }
+                });
+        }
+        // When the students are selected, calculate the number of students
+document.getElementById('students').addEventListener('change', function() {
+    var selectedStudents = document.getElementById('students').selectedOptions;
+    var numParticipants = selectedStudents.length; // Count the number of selected students
+    document.getElementById('num_participation').value = numParticipants; // Set the number of participants
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const calendarEl = document.getElementById("fullCalendar");
+
+    if (calendarEl) {
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: "dayGridMonth",
+            events: "/get_excursions.php", // Ensure this endpoint returns correct event data
+            eventClick: function (info) {
+                alert(`Event: ${info.event.title}\nStart: ${info.event.start}\nEnd: ${info.event.end}`);
+            }
+        });
+        calendar.render();
+    }
+});
+
+
+
+
+
+
+
+
+
